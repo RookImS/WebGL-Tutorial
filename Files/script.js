@@ -12,8 +12,13 @@ var skyboxShader;
 var skyboxBuffer;
 
 // var mMat, vMat, pMat;
-var baseColor = [0.5, 0.5, 0.5];
-var cameraPos = [2.0, 2.0, 2.0];
+var baseColor = [0.2, 0.2, 0.2];
+var cameraPos = [-1.0, 1.0, -1.0];
+
+var xMove = 0.0;
+var yMove = 0.0;
+var zMove = 0.0;
+var speedRot = 0.005;
 var xRot = 0.0;
 var yRot = 0.0;
 var zRot = 0.0;
@@ -66,6 +71,10 @@ var cubeVertices = [
     -0.5, -0.5,  0.5,  0.0, -1.0,  0.0,
     -0.5, -0.5, -0.5,  0.0, -1.0,  0.0
 ];
+var cubeLineVertices = [
+    
+]
+
 
 const num_skyboxVertex = 36;
 var skyboxVertices = [
@@ -132,7 +141,6 @@ function initialiseGL(canvas) {
         canvas_width = canvas.width;
         canvas_height = canvas.height;            
         gl.viewport(0, 0, canvas.width, canvas.height);
-        gl.enable(gl.DEPTH_TEST)
     }
     catch (e) {
     }
@@ -157,41 +165,47 @@ function initialiseBuffer() {
 
     // skybox texture를 위한 buffer 생성 및 연결
     var texData = new Array();
+    // +x, right
     texData.push(new Uint8Array([
-        255, 255, 255, 255, 128, 128, 255, 255, 255, 255, 255, 255, 128, 128, 255, 255,
-        128, 128, 255, 255, 255, 255, 255, 255, 128, 128, 255, 255, 255, 255, 255, 255,
-        255, 255, 255, 255, 128, 128, 255, 255, 255, 255, 255, 255, 128, 128, 255, 255,
-        128, 128, 255, 255, 255, 255, 255, 255, 128, 128, 255, 255, 255, 255, 255, 255
+        0, 0, 255, 255,     255, 255, 255, 255, 0, 0, 255, 255,     255, 255, 255, 255,
+        255, 255, 255, 255, 0, 0, 255, 255,     255, 255, 255, 255, 0, 0, 255, 255,
+        0, 0, 255, 255,     255, 255, 255, 255, 0, 0, 255, 255,     255, 255, 255, 255,
+        255, 255, 255, 255, 0, 0, 255, 255,     255, 255, 255, 255, 0, 0, 255, 255
     ]));
+    // -x, left
     texData.push(new Uint8Array([
-        255, 255, 255, 255, 128, 255, 128, 255, 255, 255, 255, 255, 128, 255, 128, 255,
-        128, 255, 128, 255, 255, 255, 255, 255, 128, 255, 128, 255, 255, 255, 255, 255,
-        255, 255, 255, 255, 128, 255, 128, 255, 255, 255, 255, 255, 128, 255, 128, 255,
-        128, 255, 128, 255, 255, 255, 255, 255, 128, 255, 128, 255, 255, 255, 255, 255
+        0, 255, 255, 255,   255, 255, 255, 255, 0, 255, 255, 255,   255, 255, 255, 255,
+        255, 255, 255, 255, 0, 255, 255, 255,   255, 255, 255, 255, 0, 255, 255, 255,
+        0, 255, 255, 255,   255, 255, 255, 255, 0, 255, 255, 255,   255, 255, 255, 255,
+        255, 255, 255, 255, 0, 255, 255, 255,   255, 255, 255, 255, 0, 255, 255, 255
     ]));
+    // +y, top
     texData.push(new Uint8Array([
-        255, 255, 255, 255, 255, 128, 128, 255, 255, 255, 255, 255, 255, 128, 128, 255,
-        255, 128, 128, 255, 255, 255, 255, 255, 255, 128, 128, 255, 255, 255, 255, 255,
-        255, 255, 255, 255, 255, 128, 128, 255, 255, 255, 255, 255, 255, 128, 128, 255,
-        255, 128, 128, 255, 255, 255, 255, 255, 255, 128, 128, 255, 255, 255, 255, 255
+        0, 0, 0, 0,         255, 0, 0, 255,     0, 0, 0, 0,         255, 0, 0, 255,
+        255, 0, 0, 255,     0, 0, 0, 0,         255, 0, 0, 255,     0, 0, 0, 0,
+        0, 0, 0, 0,         255, 0, 0, 255,     0, 0, 0, 0,         255, 0, 0, 255,
+        255, 0, 0, 255,     0, 0, 0, 0,         255, 0, 0, 255,     0, 0, 0, 0
     ]));
+    // -y, bottom
     texData.push(new Uint8Array([
-        255, 255, 255, 255, 128, 255, 255, 255, 255, 255, 255, 255, 128, 255, 255, 255,
-        128, 255, 255, 255, 255, 255, 255, 255, 128, 255, 255, 255, 255, 255, 255, 255,
-        255, 255, 255, 255, 128, 255, 255, 255, 255, 255, 255, 255, 128, 255, 255, 255,
-        128, 255, 255, 255, 255, 255, 255, 255, 128, 255, 255, 255, 255, 255, 255, 255,
+        0, 0, 0, 0,         0, 255, 0, 255,     0, 0, 0, 0,         0, 255, 0, 255,
+        0, 255, 0, 255,     0, 0, 0, 0,         0, 255, 0, 255,     0, 0, 0, 0,
+        0, 0, 0, 0,         0, 255, 0, 255,     0, 0, 0, 0,         0, 255, 0, 255,
+        0, 255, 0, 255,     0, 0, 0, 0,         0, 255, 0, 255,     0, 0, 0, 0
     ]));
+    // +z, front
     texData.push(new Uint8Array([
-        255, 255, 255, 255, 255, 128, 255, 255, 255, 255, 255, 255, 255, 128, 255, 255,
-        255, 128, 255, 255, 255, 255, 255, 255, 255, 128, 255, 255, 255, 255, 255, 255,
-        255, 255, 255, 255, 255, 128, 255, 255, 255, 255, 255, 255, 255, 128, 255, 255,
-        255, 128, 255, 255, 255, 255, 255, 255, 255, 128, 255, 255, 255, 255, 255, 255
+        255, 0, 255, 255,   255, 255, 255, 255, 255, 0, 255, 255,   255, 255, 255, 255,
+        255, 255, 255, 255, 255, 0, 255, 255,   255, 255, 255, 255, 255, 0, 255, 255,
+        255, 0, 255, 255,   255, 255, 255, 255, 255, 0, 255, 255,   255, 255, 255, 255,
+        255, 255, 255, 255, 255, 0, 255, 255,   255, 255, 255, 255, 255, 0, 255, 255
     ]));
+    // -z, back
     texData.push(new Uint8Array([
-        255, 255, 255, 255, 255, 255, 128, 255, 255, 255, 255, 255, 255, 255, 128, 255,
-        255, 255, 128, 255, 255, 255, 255, 255, 255, 255, 128, 255, 255, 255, 255, 255,
-        255, 255, 255, 255, 255, 255, 128, 255, 255, 255, 255, 255, 255, 255, 128, 255,
-        255, 255, 128, 255, 255, 255, 255, 255, 255, 255, 128, 255, 255, 255, 255, 255
+        255, 255, 255, 255, 255, 255, 0, 255,   255, 255, 255, 255, 255, 255, 0, 255,
+        255, 255, 0, 255,   255, 255, 255, 255, 255, 255, 0, 255,   255, 255, 255, 255,
+        255, 255, 255, 255, 255, 255, 0, 255,   255, 255, 255, 255, 255, 255, 0, 255,
+        255, 255, 0, 255,   255, 255, 255, 255, 255, 255, 0, 255,   255, 255, 255, 255
     ]));
 	skyboxTexture = loadCubemap(texData);
 
@@ -237,8 +251,8 @@ function initialiseShaders() {
 
         void main()
         {
-            position = aPos;
-            normal = aNormal;
+            position = vec3(mMat * vec4(aPos, 1.0));
+            normal = vec3(mMat * vec4(aNormal, 0.0));
             
             gl_Position = pMat * vMat * mMat * vec4(aPos, 1.0);
         }
@@ -255,7 +269,7 @@ function initialiseShaders() {
         {
             highp vec3 I = normalize(position - cameraPos);
             highp vec3 R = reflect(I, normalize(normal));
-            gl_FragColor = vec4(0.5 * baseColor, 1.0) + vec4(0.5 * textureCube(skyboxTex, R).rgb, 1.0);
+            gl_FragColor = vec4(0.6 * baseColor, 1.0) + vec4(0.4 * textureCube(skyboxTex, R).rgb, 1.0);
         }
     `;
     const cubeAttributes = ['aPos', 'aNormal'];
@@ -338,6 +352,8 @@ function makeShaderProgram(vs, fs, attributes) {
 }
 
 function renderScene() {
+    gl.enable(gl.DEPTH_TEST);
+
     gl.clearColor(0.5, 0.5, 0.5, 0.0);
 	gl.clearDepth(depth_clear_value);
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -354,9 +370,9 @@ function renderScene() {
 
     // if (flag_animation == 1)
 	// {
-	// 	xRot = xRot + speedRot;	
-	// 	yRot = yRot + speedRot;	
-	// 	zRot = zRot + speedRot;	
+		xRot = xRot + speedRot;	
+		yRot = yRot + speedRot;	
+		zRot = zRot + speedRot;	
     // }
     var pMatID;
     var vMatID;
@@ -399,7 +415,6 @@ function renderScene() {
 
     // buffer 연결 및 primitive 생성
     gl.bindBuffer(gl.ARRAY_BUFFER, cubeBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(cubeVertices), gl.DYNAMIC_DRAW);
     gl.enableVertexAttribArray(0);
     gl.vertexAttribPointer(0, 3, gl.FLOAT, gl.FALSE, 6 * fSize, 0);
     gl.enableVertexAttribArray(1);
@@ -434,7 +449,6 @@ function renderScene() {
 
     // buffer 연결 및 primitive 생성
     gl.bindBuffer(gl.ARRAY_BUFFER, skyboxBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(skyboxVertices), gl.DYNAMIC_DRAW);
     gl.enableVertexAttribArray(0);
     gl.vertexAttribPointer(0, 3, gl.FLOAT, gl.FALSE, 3 * fSize, 0);
     if (!testGLError("gl.vertexAttribPointer")) {
