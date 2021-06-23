@@ -42,6 +42,7 @@
         </h3>
 
         <pre class='ToC'>
+        0. <a href='#h_start'>시작하면서..</a>
         1. <a href='#h_introduce'>environment mapping이란?</a>
         2. <a href='#h_skybox'>skybox와 cubemap texture</a>
             2-1. <a href='#h1_skybox1'>skybox</a>
@@ -50,7 +51,44 @@
         3. <a href='#h_em'>environment mapping</a>
             3-1. <a href='#h1_em1'>반사(reflection)와 굴절(refraction)</a>
             3-2. <a href='#h1_em2'>구현</a>
+        4. <a href='#h_end'>마치며..</a>
         </pre>
+    </div>
+
+    <hr>
+    
+    <!-- 시작하면서.. -->
+    <div>
+        <h2 id='h_start'>
+            0. 시작하면서..
+        </h2>
+
+        <p class='paragraph'>
+            이 Tutorial은 WebGL1.0을 이용한 environment mapping을 다루고 있다. 이를 이해하기 위해서는 기본적인 WebGL1.0에서 간단한 도형을 렌더링할 수 있고, texture를 활용할 줄 알아야 한다. 
+            또한 model, view, projection matrix에 대한 기본적인 이해가 필요하며, WebGL1.0을 이용해 depth test를 사용할 줄 알아야한다. 
+            마지막으로 vector의 계산과 normal vector, 방향vector에 대해 이해하고 있어야한다.
+        </p>
+        <p class='paragraph'>
+            만약 위 내용을 잘 모른다면 아래 링크를 통해 먼저 공부하는 것을 추천한다.
+            <br><br>
+            <a href='https://www.youtube.com/watch?v=77cmqAEcvJU'>Matrix Transform</a><br>
+            <a href='https://www.youtube.com/watch?v=hGo0UAebWnk'>View/Projection Matrix</a><br>
+            <a href='https://www.youtube.com/watch?v=NlhmZwIXZko'>Depth Test(Per-Fragment Operations)</a><br>
+            <a href='https://www.youtube.com/watch?v=ISXcdfYmYUI'>Depth Test(Per-Fragment Operations) 실습</a><br>
+            <a href='https://www.youtube.com/watch?v=ilg1Jc4Q0Rk'>Texture</a><br>
+            <a href='https://www.youtube.com/watch?v=uVDZton_TwU'>Texture 실습</a>
+        </p>
+        <p class='paragraph'>
+            그리고 본 Tutorial에 대한 소스코드는 <a href='https://git.ajou.ac.kr/rookims1996/webgl-tutorial'>SeongGeon Kim / webgl-tutorial · GitLab (ajou.ac.kr)</a>에서 다운로드할 수 있다.
+        </p>
+    </div>
+
+    <br>
+
+    <div>
+        <a href='#ToC' style='font-size: 70%;'>
+            목차로 돌아가기
+        </a>
     </div>
 
     <hr>
@@ -311,7 +349,7 @@ var skyboxVertices = [
         </p>
         <p class='paragraph'>
             그리고 우리는 위 vertex들을 이용해 얻은 vector로 cube의 적절한 위치에 cubemap texture를 mapping해서 skybox를 만들어야 한다. 
-            이 때, skybox는 물체가 움직인다고 해서 같이 배경의 위치까지 같이 회전하면 안되므로 카메라를 조종하는 view matrix에 영향을 받지 않아야 한다. 
+            이 때, skybox는 카메라가 움직인다고 해서 같이 배경의 위치까지 같이 회전하면 안되므로 카메라를 조종하는 view matrix에 영향을 받지 않아야 한다. 
             이를 위해서 vertex shader에서 skybox의 vertex를 계산할 때, homogeneous coordinate를 만들어 물체의 움직임을 담당해서 계산해주는 vector의 4번째 값을 0으로 만들어 
             도형의 움직임에 대해서 영향을 받지않도록 만들어 준다.
         </p>
@@ -596,6 +634,37 @@ void main()
         </a>
     </div>
 
+    <hr>
+
+    <!-- 마치며.. -->
+    <div>
+        <h2 id='h_end'>
+            4   . 마치며..
+        </h2>
+
+        <p class='paragraph'>
+            이 Tutorial에서는 WebGL1.0으로 cubemap texture를 이용해서 skybox를 만들고 이를 응용해 물체가 주변 skybox를 반사하는 효과를 낼 수 있도록 environment mapping을 했다. 
+            이번에는 반사만 구현을 했지만 위에서 굴절에 대한 내용이 있으므로 이를 활용해 굴절 또한 구현할 수 있다.
+        </p>
+        <p class='paragraph'>
+            또한 environment mapping이 아니더라도 그래픽 세계를 현실과 같이 자연스럽게 표현하는 여러 기법들이 존재하는데 그 중에서 
+            빛과 그림자에 관련된 처리를 하는 shading과 함께 environment mapping을 이용한다면 더욱 현실감이 드는 그래픽을 구현할 수 있을 것이다.
+        </p>
+        <p class='paragraph'>
+            그리고 현재의 구현으로는 움직이는 물체를 반영하지 못하는 skybox만을 texture로 사용했기 때문에 주변 사물은 반영을 하지 못하고 있다. 
+            이를 응용해서 skybox의 texture만을 가져오는 것이 아니라 다른 물체의 움직임도 고려한 texture를 실시간으로 만들어 cubemap texture로 사용할 수 있을 것이다. 
+            이는 주변을 렌더링한 내용을 다시 여러 image로 만들어 texture로 사용하게 되므로 매우 많은 연산이 필요할 것이라는 것을 예상할 수 있다.
+            하지만 극도로 자연스러운 그래픽을 표현할 것이라면 environment mapping을 응용해 위의 내용을 구현해낼 수 있을 것이다.
+        </p>
+    </div>
+
+    <br>
+
+    <div>
+        <a href='#ToC' style='font-size: 70%;'>
+            목차로 돌아가기
+        </a>
+    </div>
 </body>
 
 </html>
