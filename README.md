@@ -50,8 +50,8 @@
      https://learnopengl.com/Advanced-OpenGL/Cubemaps<br>
      https://webglfundamentals.org/webgl/lessons/webgl-cube-maps.html<br>
      https://lifeisforu.tistory.com/375<br>
-     https://www.youtube.com/watch?v=hGo0UAebWnk<br>
      https://www.youtube.com/watch?v=77cmqAEcvJU<br>
+     https://www.youtube.com/watch?v=hGo0UAebWnk<br>
      https://www.youtube.com/watch?v=NlhmZwIXZko<br>
      https://www.youtube.com/watch?v=ISXcdfYmYUI<br>
      https://www.youtube.com/watch?v=ilg1Jc4Q0Rk<br>
